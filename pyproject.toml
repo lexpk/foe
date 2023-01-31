@@ -1,17 +1,32 @@
 [project]
-name = "example_package_YOUR_USERNAME_HERE"
-version = "0.0.1"
+name = "foe"
+version = "0.0.4"
 authors = [
-  { name="Example Author", email="author@example.com" },
+  { name="Alexander Pluska", email="alexander.plusla@example.com" },
 ]
-description = "A small example package"
+description = "A saturation based theorem prover with proof search directed by a learned embedding."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  'lark >= 1.0',
+]
 
 [project.urls]
 "Homepage" = "https://github.com/lexpk/foe"
+
+[build-system]
+requires = ['setuptools>=42']
+build-backend = 'setuptools.build_meta'
+
+[project.optional-dependencies]
+test = [
+    "pytest>=6.2.5"
+]
+experiments = [
+    "ipykernel>=6.20.2"
+]
