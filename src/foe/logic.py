@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Tuple, Union
 from lark import Lark, ParseTree
 from itertools import combinations
 
@@ -7,7 +6,7 @@ from itertools import combinations
 @dataclass(eq=True, frozen=True)
 class Function:
     name: str
-    arguments: Tuple['Term']
+    arguments: tuple['Term', ...]
 
     def __repr__(self) -> str:
         if len(self.arguments) == 0:
@@ -74,14 +73,14 @@ def is_subterm(subterm: Term, term: Term) -> bool:
     return False
 
 
-def get_subterm(Term, index: Tuple[int]):
+def get_subterm(Term, index: tuple[int, ...]):
     """Gets a subterm of a term.
 
     Parameters
     ----------
     Term : Term
         The term.
-    index : Tuple[int]
+    index : Tuple[int, ...]
         The index of the subterm.
 
     Returns
@@ -170,8 +169,8 @@ class Equation:
 
 @dataclass(eq=True, frozen=True)
 class Sequent:
-    antecedent: Tuple[Equation]
-    succedent: Tuple[Equation]
+    antecedent: tuple[Equation, ...]
+    succedent: tuple[Equation, ...]
 
     def __repr__(self) -> str:
         return "{} ⊢ {}".format(
@@ -361,20 +360,20 @@ def mgu(t1: Term, t2: Term, disjoint=True) -> Substitution:
 
 def substitute(
     s: Substitution,
-    x: Union[Term, Equation, Sequent]
-) -> Union[Term, Equation, Sequent]:
+    x: Term | Equation | Sequent
+) -> Term | Equation | Sequent:
     """Substitutes a term for a variable.
 
     Parameters
     ----------
     s : Substitution
         The substitution.
-    x : Union[Term, Equation, Sequent]
+    x : Term | Equation | Sequent
         The term, equation or sequent.
 
     Returns
     -------
-    Union[Term, Equation, Sequent]
+    Term | Equation | Sequent
         The term, equation or sequent with the substitution applied.
 
     Example
@@ -411,9 +410,9 @@ class Problem():
     ----------
     sorts : set[str]
         The sorts that have been declared.
-    functions : set[(str, Tuple[str], str)]
+    functions : set[(str, tuple[str, ...], str)]
         The functions that have been declared.
-    function_sorts : dict[str, (Tuple[str], str)]
+    function_sorts : dict[str, (tuple[str, ...], str)]
         A mapping from function names to their argument and result sorts.
     sequents : list[Sequent]
         The sequents that have been read.
@@ -426,7 +425,7 @@ class Problem():
     -------
     declare_sort(s: str)
         Declares a new sort.
-    declare_function(name: str, argument_sorts: Tuple[str], result_sort: str)
+    declare_function(name: str, argument_sorts: tuple[str], result_sort: str)
         Declares a new function.
     read_sequent(s: str)
         Parses a sequent from a string.
@@ -434,8 +433,8 @@ class Problem():
 
     def __init__(self):
         self.sorts: set[str] = set()
-        self.functions: set[(str, Tuple[str], str)] = set()
-        self.function_sorts: dict[str, (Tuple[str], str)] = dict()
+        self.functions: set[(str, tuple[str, ...], str)] = set()
+        self.function_sorts: dict[str, (tuple[str, ...], str)] = dict()
         self.sequents: list[Sequent] = list()
         self.variablecounter: int = 0
         self.variablessorts: dict[Variable, str] = dict()
@@ -462,7 +461,7 @@ class Problem():
     def declare_function(
         self,
         name: str,
-        argument_sorts: Tuple[str],
+        argument_sorts: tuple[str, ...],
         result_sort: str
     ):
 
@@ -538,7 +537,7 @@ class Problem():
         succedent = self._parse_equations(tree.children[1])
         return Sequent(antecedent, succedent)
 
-    def _parse_equations(self, tree) -> Tuple[Equation]:
+    def _parse_equations(self, tree) -> tuple[Equation, ...]:
         return tuple(self._parse_equation(e) for e in tree.children)
 
     def _parse_equation(self, tree) -> Equation:
@@ -556,7 +555,7 @@ class Problem():
                 self._parse_arguments(tree.children[0].children[0])
             )
 
-    def _parse_arguments(self, tree) -> Tuple[Term]:
+    def _parse_arguments(self, tree) -> tuple[Term, ...]:
         if tree is None:
             return tuple()
         else:
